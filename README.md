@@ -12,8 +12,13 @@ Can register new user and create new task.
 
 Can get user info and task info.
 
-### 5h. Oct. 2020 - 2:
+### 5th. Oct. 2020 - 2:
 
 Can update/delete user and task.
 
 - All basic CRUD implemented.
+
+### 6th. Oct. 2020:
+
+User's password being hashed on save/update using Bcrpytjs.
+A minor change applied to Task schema.

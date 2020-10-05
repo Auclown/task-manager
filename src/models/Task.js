@@ -6,6 +6,11 @@ const taskSchema = new Schema({
     required: true,
     trim: true,
   },
+  completed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 module.exports = Task = model("Task", taskSchema);
