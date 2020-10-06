@@ -1,16 +1,19 @@
 const express = require("express");
 const User = require("../models/User");
+const auth = require("../middlewares/auth");
 
 const router = express.Router();
 
 // Register new user
 router.post("/new", async (req, res) => {
+  const user = new User(req.body);
+
   try {
-    const user = new User(req.body);
     await user.save();
-    res.status(201).send(user);
+    const token = await user.generateAuthToken();
+    res.status(201).send({ user, token });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send(error);
   }
 });
 
@@ -26,13 +29,18 @@ router.get("/:username", async (req, res) => {
   }
 });
 
+// Get current logged in user
+router.get("/profile", auth, async (req, res) => {
+  res.send(req.user);
+});
+
 // Get all users
-router.get("/", async (req, res) => {
+router.get("/all", auth, async (req, res) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send(error);
   }
 });
 
@@ -61,7 +69,7 @@ router.patch("/:username", async (req, res) => {
     await user.save();
     res.send(user);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send(error);
   }
 });
 
@@ -76,7 +84,19 @@ router.delete("/:username", async (req, res) => {
     }
     res.send(user);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).send(error);
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findByCredentials(email, password);
+    const token = await user.generateAuthToken();
+    res.send({ user, token });
+  } catch (error) {
+    res.status(400).send(error);
   }
 });
 
