@@ -31,7 +31,7 @@ router.get("/user/:username", async (req, res) => {
   }
 });
 
-router.get("/profile", auth, async (req, res) => {
+router.get("/profile/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
@@ -56,7 +56,31 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.patch("/user/:username", async (req, res) => {
+router.post("/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+router.post("/logout_all", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+
+    await req.user.save();
+    res.send();
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+router.patch("/profile/me", auth, async (req, res) => {
   const allowedUpdates = ["username", "email", "password", "name"];
   const updates = Object.keys(req.params);
   const isValidUpdate = updates.every((update) =>
@@ -67,23 +91,18 @@ router.patch("/user/:username", async (req, res) => {
     res.status(400).send({ error: { message: "Invalid update" } });
   }
 
-  const username = req.params.username;
   try {
-    const user = await User.findOne({ username });
-    updates.forEach((update) => (user[update] = req.body[update]));
-    await user.save();
-    res.status(200).send(user);
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.send(req.user);
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
 
-router.delete("/user/:username", async (req, res) => {
-  const username = req.params.username;
-
+router.delete("/profile/me", auth, async (req, res) => {
   try {
-    const user = await User.findOneAndDelete({ username });
-    res.status(200).send(user);
+    await req.user.remove();
   } catch (error) {
     res.status(400).send(error.message);
   }

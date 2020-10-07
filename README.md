@@ -22,3 +22,8 @@ Can update/delete user and task.
 
 User's password being hashed on save/update using Bcrpytjs.
 A minor change applied to Task schema.
+
+### 8th. Oct. 2020:
+
+Users can now log out.
+Updating and deleting user now requires authentication.
