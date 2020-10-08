@@ -4,6 +4,8 @@
 
 Refreshing Memory
 
+---
+
 ### 30th. Sept. 2020:
 
 Can register new user and create new task.
@@ -27,3 +29,10 @@ A minor change applied to Task schema.
 
 Users can now log out.
 Updating and deleting user now requires authentication.
+
+### 9th. Oct. 2020:
+
+Task routes need authentication as well.
+Users can filter tasks. Pagination implemented.
+
+## END OF MEMORY REFRESH PROJECT
